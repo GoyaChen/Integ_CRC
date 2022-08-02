@@ -19,6 +19,9 @@ import {
     useWindowSize,
   } from '@react-hook/window-size'
 
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+
 
 //const option_url = '/voyage/' + '?hierarchical=false'
 
@@ -47,6 +50,9 @@ function Pie (props) {
     })
 
     const [aggregation, setAgg] = React.useState('sum');
+
+    const [showAlert, setAlert] = useState(false);
+    const [str, setStr] = useState("")
 
     //const {sum, average} = aggregation;
 
@@ -96,11 +102,22 @@ function Pie (props) {
             })
             .catch(function (error) {
                 console.log(error);
-                alert("undefined combination")
+               setAlert(true)
             });
 
     }, [option.field, option.value, aggregation, search_object]);
 
+    const alertBar = () => {
+        if(showAlert){
+          return <Alert severity="error">
+          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Sorry, these particular variables don't graph well together:</AlertTitle> 
+          <AlertTitle>The {aggregation} of {options_flat[option.field].flatlabel}, {options_flat[option.value].flatlabel} Pie Graph</AlertTitle> 
+        </Alert>
+        }else{
+            return ""
+        }
+       }
 
     return (
         <div>
@@ -147,6 +164,7 @@ function Pie (props) {
                         </Select>
                     </FormControl>
                 </Box>
+                {alertBar()}
             </div>
             <div>
                 <FormControl>

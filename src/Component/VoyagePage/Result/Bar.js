@@ -67,7 +67,7 @@ export default function Bar(props) {
   const [aggregation, setAgg] = React.useState("sum");
 
   const [showAlert, setAlert] = useState(false);
-  const [str, setStr] = useState("")
+  // const [str, setStr] = useState("")
 
   // console.log("🏀", barData)
 
@@ -99,8 +99,6 @@ export default function Bar(props) {
         [name]: event.target.value[event.target.value.length - 1],
       });
   }
-
-  let tempstr = ""
 
   useEffect(() => {
     setIsLoading(true);
@@ -162,11 +160,11 @@ export default function Bar(props) {
         })
     })
 
-    tempstr = arr.map(function(elem){
-        return elem.name;
-    }).join("\n");
+    // tempstr = arr.map(function(elem){
+    //     return elem.name ;
+    // }).join("\n\r");
 
-    setStr(tempstr)
+    // setStr(tempstr)
 
     if (Object.values(data).indexOf('false') > -1) {
       // window.alert(`Sorry, this combination can't work:
@@ -187,13 +185,19 @@ export default function Bar(props) {
   }, [ chips, option.field, aggregation, search_object]);
 
 
-  console.log("str🍌", str)
+  // console.log("str🍌", str)
+// console.log("🍌", barData)
+// barData.map((index) =>{
+//   console.log("🍎", index.name)
+//   console.log("🍊", typeof(index.name))
+// })
 
   const alertBar = () => {
     if(showAlert){
       return <Alert severity="error">
       <AlertTitle>Error</AlertTitle>
-      Sorry, this combination can't work: {str}
+      Sorry, these particular variables don't graph well together: 
+      {barData.map(index => <AlertTitle>{index.name}</AlertTitle>)}
     </Alert>
     }else{
         return ""

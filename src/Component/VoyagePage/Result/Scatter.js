@@ -18,6 +18,10 @@ import * as options_flat from "../../util/options.json"
 import {
     useWindowSize,
   } from '@react-hook/window-size'
+
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+
 const option_url = '/voyage/?hierarchical=false' // labels in dropdowns
 
 const AUTH_TOKEN = process.env.REACT_APP_AUTHTOKEN;
@@ -44,7 +48,8 @@ function Scatter (props) {
     // const [label, setLabel] = useState()
 
     const [isLoading, setLoading] = useState(true);
-
+    const [showAlert, setAlert] = useState(false);
+    const [str, setStr] = useState("")
 
     const handleChange_agg = (event) => {
         setAgg(event.target.value);
@@ -56,7 +61,10 @@ function Scatter (props) {
             [name]: event.target.value,
         })
     }
+
+    
     useEffect(() => {
+        setAlert(false)
         //var group_by = option.field
         var value = option.value
         //var agg = aggregation
@@ -89,7 +97,7 @@ function Scatter (props) {
             })
             .catch(function (error) {
                 console.log(error);
-                alert("undefined combination")
+                setAlert(true)
             });
 
     }, [option.field, option.value, aggregation, search_object]);
@@ -110,6 +118,18 @@ function Scatter (props) {
     if (isLoading) {
         return <div className="spinner"></div>;
     }
+
+    const alertBar = () => {
+        if(showAlert){
+            return <Alert severity="error">
+            <AlertTitle>Error</AlertTitle>
+            <AlertTitle>Sorry, these particular variables don't graph well together:</AlertTitle> 
+            <AlertTitle>The {aggregation} of {options_flat[option.field].flatlabel}, {options_flat[option.value].flatlabel} Pie Graph</AlertTitle> 
+          </Alert>
+        }else{
+            return ""
+        }
+       }
 
     return (
         <div>
@@ -171,6 +191,7 @@ function Scatter (props) {
                         <FormControlLabel value="mean" control={<Radio />} label="Average" />
                     </RadioGroup>
                 </FormControl>
+                {alertBar()}
             </div>
 
             <div>
