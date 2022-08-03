@@ -26,6 +26,7 @@ const AUTH_TOKEN = process.env.REACT_APP_AUTHTOKEN;
 axios.defaults.baseURL = process.env.REACT_APP_BASEURL;
 axios.defaults.headers.common["Authorization"] = AUTH_TOKEN;
 
+
 export default function Bar(props) {
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -125,7 +126,7 @@ export default function Bar(props) {
     // console.log("option_value🍕", typeof(option.value))
     // console.log("element🍔",element)
     // console.log("agg_fn🥤", aggregation)
-    data.append("cachename", "voyage_export");
+    data.append("cachename", "voyage_bar_and_donut_charts");
     return fetch('https://voyages3-api.crc.rice.edu/voyage/groupby',{
       method: "POST",
       body: data,
@@ -134,16 +135,34 @@ export default function Bar(props) {
     
     .then(function (response) {
         // console.log("🔥data", response)
+
+      //  Object.values(response).forEach(val => {
+      //     if (Number.isNaN(val)) {
+      //       val = 0;
+      //     }
+      //   });
+
+      // JSON.stringify(Object.values(response), (name, val) => typeof(val) === 'number' && (isNaN(val) || !isFinite(val)) ? val.toString() : val)
         return Object.values(response)[0];
       })
     })
   
     const data = await Promise.all(promises)
+
+       //  Convert NaN to 0
+    // NaN cause the error: SyntaxError: Unexpected token N in JSON
+    Object.values(data).forEach(val => {
+      if (Number.isNaN(val)) {
+        val = 0;
+      }
+    });
+ 
+   
     // setDataFlow([...dataFlow, data[data.length - 1]])
     // console.log("🐯data is ", data)
     // console.log("🐷", typeof(data))
-   console.log("😷",chips)
-   console.log(typeof(chips))
+  //  console.log("😷",chips)
+  //  console.log(typeof(chips))
     
    
     let arr = []
