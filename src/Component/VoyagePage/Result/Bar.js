@@ -68,6 +68,8 @@ export default function Bar(props) {
   const [aggregation, setAgg] = React.useState("sum");
 
   const [showAlert, setAlert] = useState(false);
+
+  const [dataGet, setdataGet] = useState({})
   // const [str, setStr] = useState("")
 
   // console.log("🏀", barData)
@@ -106,78 +108,68 @@ export default function Bar(props) {
     setAlert(false)
     // var value = option.value;
    let yfieldArr = []
-   let currentData ={}
     const fetchData = async () => {
-      const promises = chips.map( element => {
-    var data = new FormData();
-     yfieldArr.push(element)
-    
-    for (var property in search_object) {
-      search_object[property].forEach((v) => {
-        data.append(property, v);
-      });
-    }
-   
-    data.append("hierarchical", "False");
-    data.append("groupby_fields", option.field);
-    data.append("groupby_fields", element);
-    data.append("agg_fn", aggregation);
-
-    // console.log("option_value🍕", typeof(option.value))
-    // console.log("element🍔",element)
-    // console.log("agg_fn🥤", aggregation)
-    data.append("cachename", "voyage_bar_and_donut_charts");
-    return fetch('https://voyages3-api.crc.rice.edu/voyage/groupby',{
-      method: "POST",
-      body: data,
-      headers: {'Authorization':AUTH_TOKEN}
-    }).then(res => res.json())
-    
-    .then(function (response) {
-        // console.log("🔥data", response)
-
-      //  Object.values(response).forEach(val => {
-      //     if (Number.isNaN(val)) {
-      //       val = 0;
-      //     }
-      //   });
-
-      // JSON.stringify(Object.values(response), (name, val) => typeof(val) === 'number' && (isNaN(val) || !isFinite(val)) ? val.toString() : val)
-        return Object.values(response)[0];
-      })
-    })
-  
-    const data = await Promise.all(promises)
-
-       //  Convert NaN to 0
-    // NaN cause the error: SyntaxError: Unexpected token N in JSON
-    Object.values(data).forEach(val => {
-      if (Number.isNaN(val)) {
-        val = 0;
+      var data = new FormData();
+      data.append("groupby_fields", option.field);
+      data.append("agg_fn", aggregation);
+      // data.append("hierarchical", "False");
+      data.append("cachename", "voyage_bar_and_donut_charts");
+      for (var property in search_object) {
+        search_object[property].forEach((v) => {
+          data.append(property, v);
+        });
       }
-    });
- 
-   
-    // setDataFlow([...dataFlow, data[data.length - 1]])
-    // console.log("🐯data is ", data)
-    // console.log("🐷", typeof(data))
-  //  console.log("😷",chips)
-  //  console.log(typeof(chips))
-    
+
+    chips.map( (element) => {
+     yfieldArr.push(element)
+  
+    data.append("groupby_fields", element);
+    })
+
+
+
+   fetch('https://voyages3-api.crc.rice.edu/voyage/groupby',{
+        method: "POST",
+        body: data,
+        headers: {'Authorization':AUTH_TOKEN}
+      }).then(res => res.json())
+      .then(function (response) {
+        setdataGet(response)
+        console.log("🔥data", response)
+      })
+
+      console.log("🦛", dataGet)
+      // console.log("🔍", typeof(dataGet))
+      // console.log( "🐶", yfieldArr)
+
+      // console.log("🐲", Object.keys(dataGet))
+      // console.log("🤔", Object.values(dataGet))
+
    
     let arr = []
 
-    data.forEach( (dataElement,index) =>{
-      // console.log("🐔 dataElement is ", dataElement)
-      // console.log("type", typeof(Object.values(dataElement)[0]))
-        arr.push({
-          x: Object.keys(dataElement),
-          y: Object.values(dataElement),
+    Object.values(dataGet).forEach((element, index) =>{
+          arr.push({
+          x: Object.keys(element),
+          y: Object.values(element),
           type: "bar",
           name: `aggregation: ${aggregation} label: ${options_flat[yfieldArr[index]].flatlabel}`,
           barmode: "group",
         })
+      
     })
+
+    // dataGet.forEach( (dataElement,index) =>{
+    //   console.log("🐔 dataElement is ", dataElement)
+    //   // console.log("type", typeof(Object.values(dataElement)[0]))
+    //     arr.push({
+    //       x: Object.keys(dataElement),
+    //       y: Object.values(dataElement),
+    //       type: "bar",
+    //       name: `aggregation: ${aggregation} label: ${options_flat[yfieldArr[index]].flatlabel}`,
+    //       barmode: "group",
+    //     })
+    // })
 
     // tempstr = arr.map(function(elem){
     //     return elem.name ;
