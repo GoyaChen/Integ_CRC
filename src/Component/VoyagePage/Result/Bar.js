@@ -21,6 +21,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import { ConstructionOutlined } from "@mui/icons-material";
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import { set } from "lodash";
 
 const AUTH_TOKEN = process.env.REACT_APP_AUTHTOKEN;
 axios.defaults.baseURL = process.env.REACT_APP_BASEURL;
@@ -70,6 +71,7 @@ export default function Bar(props) {
   const [showAlert, setAlert] = useState(false);
 
   const [dataGet, setdataGet] = useState({})
+
   // const [str, setStr] = useState("")
 
   // console.log("🏀", barData)
@@ -108,6 +110,9 @@ export default function Bar(props) {
     setAlert(false)
     // var value = option.value;
    let yfieldArr = []
+  //  let myMap1 = new Map()
+
+
     const fetchData = async () => {
       var data = new FormData();
       data.append("groupby_fields", option.field);
@@ -121,34 +126,30 @@ export default function Bar(props) {
       }
 
     chips.map( (element) => {
+      data.append("groupby_fields", element);
      yfieldArr.push(element)
-  
-    data.append("groupby_fields", element);
+     console.log("🚀[chips]: ", yfieldArr)
+      // myMap1.set(index,element)
     })
 
+    // console.log("Map🥭",myMap1)
 
-
-   fetch('https://voyages3-api.crc.rice.edu/voyage/groupby',{
+    console.log("🫘yfieldArr: ",yfieldArr)
+    
+    fetch('https://voyages3-api.crc.rice.edu/voyage/groupby',{
         method: "POST",
         body: data,
         headers: {'Authorization':AUTH_TOKEN}
       }).then(res => res.json())
       .then(function (response) {
-        setdataGet(response)
-        console.log("🔥data", response)
-      })
+        console.log("{🔥data}", response)
 
-      console.log("🦛", dataGet)
-      // console.log("🔍", typeof(dataGet))
-      // console.log( "🐶", yfieldArr)
-
-      // console.log("🐲", Object.keys(dataGet))
-      // console.log("🤔", Object.values(dataGet))
-
-   
+        // setdataGet(response)
     let arr = []
+    Object.values(response).forEach((element,index) =>{
+      console.log("💰Object.keys(element)", Object.keys(element))
+      console.log("💰Object.values(element", Object.values(element))
 
-    Object.values(dataGet).forEach((element, index) =>{
           arr.push({
           x: Object.keys(element),
           y: Object.values(element),
@@ -156,8 +157,31 @@ export default function Bar(props) {
           name: `aggregation: ${aggregation} label: ${options_flat[yfieldArr[index]].flatlabel}`,
           barmode: "group",
         })
-      
     })
+
+
+    if (Object.values(response).indexOf('false') > -1) {
+      // window.alert(`Sorry, this combination can't work:
+      //       ${str}
+      // `);
+      // window.location.reload(true);
+      setAlert(true)
+   }
+
+   setBarData(
+    arr
+   )
+
+   console.log("[🌲arr]", arr)
+      })
+
+
+// TO-DO 1
+// label problem: do not use the last one always 
+
+// TO-DO 2
+// can not get the fetch data from the first time, and always get the last timew data
+
 
     // dataGet.forEach( (dataElement,index) =>{
     //   console.log("🐔 dataElement is ", dataElement)
@@ -177,25 +201,18 @@ export default function Bar(props) {
 
     // setStr(tempstr)
 
-    if (Object.values(data).indexOf('false') > -1) {
-      // window.alert(`Sorry, this combination can't work:
-      //       ${str}
-      // `);
-      // window.location.reload(true);
-      setAlert(true)
-   }
+
 
     // console.log("arr value🎫", arr[0].name)
-      setBarData(
-       arr
-      )
+     
       }
 
       setIsLoading(false)
+
       fetchData().catch(console.error) 
   }, [ chips, option.field, aggregation, search_object]);
 
-
+      
   // console.log("str🍌", str)
 // console.log("🍌", barData)
 // barData.map((index) =>{
@@ -220,7 +237,7 @@ export default function Bar(props) {
   return (
     <div>
       <div>
-          <Button onClick={()=>console.log("🔥barData🔥:", barData)}>print data</Button>
+          {/* <Button onClick={()=>console.log("🔥barData🔥:", barData)}>print data</Button> */}
         <Box sx={{ maxWidth: width > 500 ? width * 0.9 : width * 0.7 }}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">X Field</InputLabel>
